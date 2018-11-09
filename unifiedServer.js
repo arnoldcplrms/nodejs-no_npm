@@ -28,25 +28,17 @@ module.exports = (req, res) => {
             headers,
         }
 
+        const handlerResponse = await chosenHandler(data)
+        console.log(handlerResponse);
+        const statusCode = typeof(handlerResponse.statusCode) == 'number' ?
+            handlerResponse.statusCode : 200;
 
-        // await chosenHandler(data, (statusCode, payload) => {
-
-        // });
-        // try {
-        const res = await chosenHandler(data)
-        console.log(res);
-        statusCode = typeof(statusCode) == 'number' ?
-            statusCode : 200;
-
-        payload = typeof(payload) == 'object' ? payload : {};
+        const payload = typeof(handlerResponse.payload) == 'object' ? handlerResponse.payload : {};
         const payloadString = JSON.stringify(payload);
 
         res.setHeader('Content-Type', 'application/json')
         res.writeHead(statusCode);
         res.end(payloadString);
-        // } catch (error) {
-
-        // }
     })
 }
 

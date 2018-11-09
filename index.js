@@ -5,14 +5,6 @@ const http = require("http"),
     fs = require('fs'),
     _data = require('./lib/data')
 
-// _data.delete('test', 'newFile')
-//     .then(() => {
-//         console.log("Success");
-//     })
-//     .catch(err => {
-//         console.log('Error', err);
-//     })
-
 http.createServer((req, res) => {
     unifiedServer(req, res);
 }).listen(config.httpPort, () => {
