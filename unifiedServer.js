@@ -1,6 +1,6 @@
 const url = require('url'),
     StringDecoder = require('string_decoder').StringDecoder,
-    helpers = require('./lib/helpers'),
+    { parseJsonToObject } = require('./lib/helpers'),
     handlers = require('./lib/handlers')
 
 module.exports = (req, res) => {
@@ -21,7 +21,7 @@ module.exports = (req, res) => {
             router[trimmedPath] : handlers.notFound;
 
         const data = {
-            payload: helpers.parseJsonToObject(buffer),
+            payload: parseJsonToObject(buffer),
             trimmedPath,
             queryStrObj,
             method,
@@ -29,7 +29,6 @@ module.exports = (req, res) => {
         }
 
         const handlerResponse = await chosenHandler(data)
-        console.log(handlerResponse);
         const statusCode = typeof(handlerResponse.statusCode) == 'number' ?
             handlerResponse.statusCode : 200;
 
@@ -41,8 +40,6 @@ module.exports = (req, res) => {
         res.end(payloadString);
     })
 }
-
-
 
 const router = {
     "ping": handlers.ping,
