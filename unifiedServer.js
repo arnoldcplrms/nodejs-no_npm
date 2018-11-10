@@ -15,33 +15,40 @@ module.exports = (req, res) => {
     req.on('data', data => {
         buffer += decoder.write(data)
     }).on('end', async() => {
-        buffer += decoder.end();
+        try {
+            buffer += decoder.end();
+            const chosenHandler = typeof(router[trimmedPath]) !== 'undefined' ?
+                router[trimmedPath] : handlers.notFound;
 
-        const chosenHandler = typeof(router[trimmedPath]) !== 'undefined' ?
-            router[trimmedPath] : handlers.notFound;
+            const data = {
+                payload: parseJsonToObject(buffer),
+                trimmedPath,
+                queryStrObj,
+                method,
+                headers,
+            }
+            const handlerResponse = await chosenHandler(data)
+            const statusCode = typeof(handlerResponse.statusCode) == 'number' ?
+                handlerResponse.statusCode : 200;
 
-        const data = {
-            payload: parseJsonToObject(buffer),
-            trimmedPath,
-            queryStrObj,
-            method,
-            headers,
+            const payload = typeof(handlerResponse.payload) == 'object' ? handlerResponse.payload : {};
+            const payloadString = JSON.stringify(payload);
+
+            res.setHeader('Content-Type', 'application/json')
+            res.writeHead(statusCode);
+            res.end(payloadString);
+        } catch (error) {
+            console.log(error);
+            res.setHeader('Content-Type', 'application/json')
+            res.writeHead(500);
+            res.end({ error: "An error occured in the unified server" });
         }
-
-        const handlerResponse = await chosenHandler(data)
-        const statusCode = typeof(handlerResponse.statusCode) == 'number' ?
-            handlerResponse.statusCode : 200;
-
-        const payload = typeof(handlerResponse.payload) == 'object' ? handlerResponse.payload : {};
-        const payloadString = JSON.stringify(payload);
-
-        res.setHeader('Content-Type', 'application/json')
-        res.writeHead(statusCode);
-        res.end(payloadString);
     })
 }
 
+
 const router = {
     "ping": handlers.ping,
-    "users": handlers.users
+    "users": handlers.users,
+    "tokens": handlers.tokens
 }
