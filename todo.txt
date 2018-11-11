@@ -1,0 +1,2 @@
+-checks post method
+-test checks post method
