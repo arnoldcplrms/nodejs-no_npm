@@ -27,7 +27,7 @@ module.exports = (req, res) => {
                 method,
                 headers,
             }
-            const handlerResponse = await chosenHandler(data)
+            const handlerResponse = await chosenHandler(data);
             const statusCode = typeof(handlerResponse.statusCode) == 'number' ?
                 handlerResponse.statusCode : 200;
 
