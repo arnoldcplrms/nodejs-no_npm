@@ -2,8 +2,8 @@ const http = require("http"),
     unifiedServer = require('./unifiedServer'),
     config = require('./config'),
     https = require('https'),
-    fs = require('fs'),
-    _data = require('./lib/data')
+    fs = require('fs')
+
 
 http.createServer((req, res) => {
     unifiedServer(req, res);
